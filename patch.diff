@@ -1,0 +1,21 @@
+diff --git a/mainloop.c b/mainloop.c
+index cc80d0e..dc5ed5b 100644
+--- a/mainloop.c
++++ b/mainloop.c
+@@ -94,6 +94,16 @@ int tun_mainloop(struct openconnect_info *vpninfo, int *timeout)
+ 
+ 	while ((this = dequeue_packet(&vpninfo->incoming_queue))) {
+ 
++		/* Some servers send us packets longer than MTU
++		despite the fact that we have negotiated MTU with
++		them. We will just drop such packets to avoid confusing
++		other places */
++		if (this->len > vpninfo->ip_info.mtu) {
++			vpn_progress(vpninfo, PRG_ERR, _("Got packet that is too long: %d, mtu: .\n"), this->len, vpninfo->ip_info.mtu);
++			free(this);
++			continue;
++		}
++
+ 		unmonitor_write_fd(vpninfo, tun);
+ 
+ 		if (os_write_tun(vpninfo, this)) {
