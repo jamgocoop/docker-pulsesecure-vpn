@@ -66,6 +66,7 @@ Now you can pass the **--servertcert** option to the final docker execution to a
 		--privileged=true \
 		-d jamgocoop/pulsesecure-vpn
 
+## Add routes
 Once started you can route subnets from host via docker container:
 
     #! /bin/bash
